@@ -211,3 +211,68 @@ Did the promo increase sales?	Yes — +$1,110/day/store, p < 0.0001
 Is the effect real or noise?	Real — 95% CI [$818, $1,402] excludes zero; d = 0.71
 Should we roll out chain-wide?	Conditional Go — pilot in 3 more regions, cap discount at 15%, monitor novelty decay
 Biggest risk?	Confounding by store size — re-run with DiD or size-adjusted model
+
+
+-- 
+
+## Hypothesis Test Results
+
+**Hypotheses:**
+- H₀: μ_promo − μ_nonpromo = 0 (no difference in mean daily sales)
+- H₁: μ_promo − μ_nonpromo ≠ 0 (two-tailed)
+- α = 0.05
+
+**Test:** Welch's t-test (unequal variances, unequal group sizes).
+**Robustness check:** Mann-Whitney U (non-parametric).
+
+| Metric | Value |
+|---|---|
+| Promo mean daily sales | $8,420 (n=150) |
+| Non-promo mean daily sales | $7,310 (n=450) |
+| **Mean difference** | **+$1,110** |
+| Standard error | $148.20 |
+| **Welch's t** | **7.49** |
+| Welch df | 243.6 |
+| **p-value** | **< 0.0001** |
+| **95% CI** | **[$818, $1,402]** |
+| **Cohen's d** | **0.71** (medium-large) |
+| Mann-Whitney U | p < 0.0001 (confirms) |
+
+## Plain-English Interpretation
+
+Promotional stores sold **$1,110 more per day** on average than non-promotional stores during the campaign. This difference is **highly unlikely to be due to chance** (p < 0.0001). We are 95% confident the true lift is between **$818 and $1,402 per store per day**. The effect size (d = 0.71) is medium-to-large — the promotion made a real, noticeable difference.
+
+**Business translation:** Across 5 stores × 30 days, the promotion generated an estimated **$166,500 in incremental sales** ($1,110 × 5 × 30). If rolled out to all 20 stores for 30 days, gross incremental revenue would be approximately **$666,000** — before discount costs.
+
+## Limitations
+
+| Limitation | Risk | Mitigation |
+|---|---|---|
+| **Store size confounding** | Larger stores may have been selected for promo, inflating the lift | Re-run with sales-per-sq-ft as covariate |
+| **Selection bias** | The 5 promo stores were not randomly assigned | Use difference-in-differences (DiD) with pre-period baseline |
+| **Seasonality** | Shared weekend spikes could bias one group | Add store fixed effects and time controls |
+| **Novelty effect** | Week-4 gap narrowing suggests decay | Extend test to 60 days before chain-wide rollout |
+| **Cannibalization** | Promo stores may pull from nearby non-promo stores | Ensure control stores are ≥50 miles away |
+
+**Strongest next step:** Difference-in-differences regression:
+`Sales_it = α + β·Promo_i + γ·Post_t + δ·(Promo_i × Post_t) + ε_it`
+
+## Recommendation
+
+### ✅ Conditional Go — pilot before chain-wide rollout.
+
+The promotion produced a statistically significant, practically meaningful lift. But the discount cost must be weighed:
+
+| Item | Calculation | Value |
+|---|---|---|
+| Incremental revenue (20 stores, 30 days) | $1,110 × 20 × 30 | $666,000 |
+| Discount cost (15% of promo sales) | −15% × $666,000 | −$99,900 |
+| Incremental gross profit (60% GM) | ($666,000 − $99,900) × 0.60 | +$339,660 |
+| Campaign operating cost | Fixed | −$40,000 |
+| **Net margin impact** | | **+$299,660** |
+
+**Guardrails:**
+1. Pilot in 3 additional regions for 30 days before chain-wide rollout.
+2. Cap discount at 15% — deeper discounts erode margin faster than volume compensates.
+3. Monitor weekly for novelty decay; pause if lift drops below $600/day.
+4. Stratify results by store size in the next analysis.
